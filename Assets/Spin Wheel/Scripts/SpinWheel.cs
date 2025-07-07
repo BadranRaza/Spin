@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using TMPro;
 
-[System.Serializable]
+[Serializable]
 public class RewardData
 {
     public string name;
@@ -16,8 +16,8 @@ public class RewardData
 
 public enum RewardType
 {
-    Coins,
-    Gems
+    Coins, // Corresponds to Regular currency
+    Gems   // Corresponds to Rare currency
 }
 
 public enum RewardRarity
@@ -31,17 +31,12 @@ public enum RewardRarity
 
 public class SpinWheel : MonoBehaviour
 {
-    [Header("Example Currency")]
-    public TextMeshProUGUI coinsText;
-    public double coinsAmount = 0;
-    public TextMeshProUGUI gemsText;
-    public double gemsAmount = 0;
-
     [Header("UI References")]
     public RectTransform wheelRectTransform;
     public TextMeshProUGUI resultText;
     public Button spinButton;
     public Button watchAdButton;
+    public Button closeButton;
 
     [Header("Reward Display Panel")]
     public GameObject rewardDisplayPanel;
@@ -132,16 +127,12 @@ public class SpinWheel : MonoBehaviour
     {
         ValidateComponents();
         CalculateProbabilities();
-
-        // Subscribe to reward events
-        OnRewardWon += HandleRewardWon;
     }
 
     private void OnEnable()
     {
         LoadLocalGameState();
         UpdateUI();
-        UpdateCurrencyUI();
         HideRewardDisplay();
     }
 
@@ -150,14 +141,14 @@ public class SpinWheel : MonoBehaviour
         SaveLocalGameState();
     }
 
-    private void OnDestroy()
-    {
-        // Unsubscribe from events to prevent memory leaks
-        OnRewardWon -= HandleRewardWon;
-    }
-
     private void Update()
     {
+        // Activate/Deactivate close button based on spinning state
+        if (closeButton != null)
+        {
+            closeButton.gameObject.SetActive(!isSpinning);
+        }
+        
         // Only update UI when not spinning to avoid performance issues
         if (!isSpinning && !isSpinningInProgress)
         {
@@ -216,6 +207,8 @@ public class SpinWheel : MonoBehaviour
             Debug.LogError("SpinWheel: spinButton is not assigned!");
         if (watchAdButton == null)
             Debug.LogError("SpinWheel: watchAdButton is not assigned!");
+        if (closeButton == null)
+            Debug.LogError("SpinWheel: closeButton is not assigned!");
     }
 
     private void SaveLocalGameState()
@@ -415,58 +408,6 @@ public class SpinWheel : MonoBehaviour
         {
             audioSource.PlayOneShot(clip);
         }
-    }
-
-    private void HandleRewardWon(double amount, RewardType type)
-    {
-        switch (type)
-        {
-            case RewardType.Coins:
-                coinsAmount += amount;
-                break;
-            case RewardType.Gems:
-                gemsAmount += amount;
-                break;
-        }
-
-        UpdateCurrencyUI();
-        Debug.Log($"[Currency] Awarded {amount} {type}. Total Coins: {coinsAmount}, Total Gems: {gemsAmount}");
-    }
-
-    private void UpdateCurrencyUI()
-    {
-        if (coinsText != null)
-        {
-            coinsText.text = FormatCurrency(coinsAmount);
-        }
-
-        if (gemsText != null)
-        {
-            gemsText.text = FormatCurrency(gemsAmount);
-        }
-    }
-
-    private string FormatCurrency(double amount)
-    {
-        if (amount < 1000)
-            return amount.ToString("F0");
-
-        if (amount >= 1e42) return (amount / 1e42).ToString("F1") + "Td";
-        if (amount >= 1e39) return (amount / 1e39).ToString("F1") + "Dd";
-        if (amount >= 1e36) return (amount / 1e36).ToString("F1") + "Ud";
-        if (amount >= 1e33) return (amount / 1e33).ToString("F1") + "D";
-        if (amount >= 1e30) return (amount / 1e30).ToString("F1") + "N";
-        if (amount >= 1e27) return (amount / 1e27).ToString("F1") + "O";
-        if (amount >= 1e24) return (amount / 1e24).ToString("F1") + "Sp";
-        if (amount >= 1e21) return (amount / 1e21).ToString("F1") + "Sx";
-        if (amount >= 1e18) return (amount / 1e18).ToString("F1") + "Qi";
-        if (amount >= 1e15) return (amount / 1e15).ToString("F1") + "Qa";
-        if (amount >= 1e12) return (amount / 1e12).ToString("F1") + "T";
-        if (amount >= 1e9) return (amount / 1e9).ToString("F1") + "B";
-        if (amount >= 1e6) return (amount / 1e6).ToString("F1") + "M";
-        if (amount >= 1e3) return (amount / 1e3).ToString("F1") + "K";
-
-        return amount.ToString("F0");
     }
 
     #endregion
