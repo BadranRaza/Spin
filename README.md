@@ -33,10 +33,11 @@ A powerful and production-ready **Spin Wheel System** for Unity. Features advanc
 
 ### UI Integration
 Connect your UI buttons to the public methods in the `SpinWheel.cs` script:
--   **Spin Button**: Connect to `SpinWheel.Spin()`.
+-   **Free Spin Button**: Connect to `SpinWheel.SpinFree()`.
+-   **Watch Ad Button**: Connect to `SpinWheel.SpinOnAd()`.
 -   **Test/Reset Button**: Connect to `SpinWheel.ResetCooldown()`.
 
-The `SpinWheel` script will automatically handle enabling/disabling the spin button based on cooldown status.
+The `SpinWheel` script will automatically handle enabling/disabling the buttons based on cooldown status.
 
 ### Example: Weighted Probability
 To make "5000 Coins" twice as likely as "50 Gems":
@@ -62,4 +63,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **⭐ Star this repo if it helped you!** 
 
-Made with ❤️ by [Autech](https://github.com/HaseebDev)
+Made with ❤️ by [Autech](https://github.com/BadranRaza)
